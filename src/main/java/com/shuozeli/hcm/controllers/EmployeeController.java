@@ -29,13 +29,25 @@ public final class EmployeeController {
                 });
     }
 
-    @GetMapping("/")
+    @GetMapping
     Flux<Employee> listEmployees() {
         return employeeRepository.findAll();
     }
 
-    @PostMapping("/")
+    @PostMapping
     Mono<Employee> createEmployees(@RequestBody Employee employee) {
         return employeeRepository.save(employee);
+    }
+
+    @DeleteMapping("/{employeeId}")
+    Mono<Void> deleteEmployees(@PathVariable int employeeId) {
+        return employeeRepository.existsById(employeeId)
+                .flatMap(found -> {
+                    if (found) {
+                        return employeeRepository.deleteById(employeeId);
+                    } else {
+                        return Mono.error(new ResourceNotFoundException());
+                    }
+                });
     }
 }
