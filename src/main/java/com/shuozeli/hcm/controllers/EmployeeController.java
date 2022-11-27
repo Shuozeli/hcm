@@ -2,10 +2,8 @@ package com.shuozeli.hcm.controllers;
 
 import com.shuozeli.hcm.data.Employee;
 import com.shuozeli.hcm.respositories.EmployeeRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -18,7 +16,7 @@ public final class EmployeeController {
     }
 
     @GetMapping("/{employeeId}")
-    Mono<Employee> listBookmarks(
+    Mono<Employee> getEmployees(
             @PathVariable int employeeId
     ) {
         return employeeRepository.existsById(employeeId)
@@ -29,5 +27,15 @@ public final class EmployeeController {
                         return Mono.error(new ResourceNotFoundException());
                     }
                 });
+    }
+
+    @GetMapping("/")
+    Flux<Employee> getEmployees() {
+        return employeeRepository.findAll();
+    }
+
+    @PostMapping("/")
+    Mono<Employee> createEmployees(@RequestBody Employee employee) {
+        return employeeRepository.save(employee);
     }
 }
