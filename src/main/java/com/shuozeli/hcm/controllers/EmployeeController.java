@@ -30,7 +30,7 @@ public final class EmployeeController {
     }
 
     @GetMapping("/")
-    Flux<Employee> getEmployees() {
+    Flux<Employee> listEmployees() {
         return employeeRepository.findAll();
     }
 
