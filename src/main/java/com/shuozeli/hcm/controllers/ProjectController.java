@@ -1,8 +1,6 @@
 package com.shuozeli.hcm.controllers;
 
-import com.shuozeli.hcm.data.Employee;
 import com.shuozeli.hcm.data.Project;
-import com.shuozeli.hcm.respositories.EmployeeRepository;
 import com.shuozeli.hcm.respositories.ProjectRepository;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -13,7 +11,7 @@ import reactor.core.publisher.Mono;
 public final class ProjectController {
     private final ProjectRepository projectRepository;
 
-    public ProjectController (ProjectRepository projectRepository) {
+    public ProjectController(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
 
@@ -49,5 +47,19 @@ public final class ProjectController {
                     return Mono.error(new ResourceNotFoundException());
                 }
         );
+    }
+
+    @PutMapping("/{projectId}")
+    Mono<Project> updateProject(@RequestBody Project projectFromRequest, @PathVariable int projectId) {
+        return projectRepository
+                .findById(projectId)
+                .flatMap(project -> {
+                    Project projectUpdated = new Project(
+                            projectId,
+                            projectFromRequest.name() == null ? project.name() : projectFromRequest.name(),
+                            projectFromRequest.description() == null ? project.description() : projectFromRequest.description()
+                    );
+                    return projectRepository.save(projectUpdated);
+                });
     }
 }

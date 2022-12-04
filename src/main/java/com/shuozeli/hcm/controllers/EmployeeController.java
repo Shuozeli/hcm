@@ -50,4 +50,19 @@ public final class EmployeeController {
                     }
                 });
     }
+
+    @PutMapping("/{employeeId}")
+    Mono<Employee> updateEmployee(@RequestBody Employee employeeFromRequest, @PathVariable int employeeId) {
+        return employeeRepository
+                .findById(employeeId)
+                .flatMap(employee -> {
+                    Employee employeeUpdated = new Employee(
+                            employeeId,
+                            employeeFromRequest.name() == null ? employee.name() : employeeFromRequest.name(),
+                            employeeFromRequest.email() == null ? employee.email() : employeeFromRequest.email(),
+                            employeeFromRequest.title() == null ? employee.title() : employeeFromRequest.title()
+                    );
+                    return employeeRepository.save(employeeUpdated);
+                });
+    }
 }
